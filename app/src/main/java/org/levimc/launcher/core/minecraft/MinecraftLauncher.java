@@ -44,7 +44,10 @@ public class MinecraftLauncher {
         String systemAbi = abiToSystemLibDir(Build.SUPPORTED_ABIS[0]);
         File dstLibDir = new File(context.getDataDir(), "minecraft/" + version.directoryName + "/lib/" + systemAbi);
         fakeInfo.nativeLibraryDir = dstLibDir.getAbsolutePath();
-        fakeInfo.packageName = packageName;
+        fakeInfo.packageName = MC_PACKAGE_NAME; 
+fakeInfo.flags |= ApplicationInfo.FLAG_HAS_CODE | ApplicationInfo.FLAG_SYSTEM; 
+// Adding the SYSTEM flag can sometimes trick the native engine into skipping license checks.
+
         fakeInfo.dataDir = version.versionDir.getAbsolutePath();
 
         File splitsFolder = new File(version.versionDir, "splits");
@@ -116,9 +119,8 @@ public class MinecraftLauncher {
                 }
 
                 sourceIntent.setClass(context, MinecraftActivity.class);
-                ApplicationInfo mcInfo = version.isInstalled ?
-                        gameManager.getPackageContext().getApplicationInfo() :
-                        createFakeApplicationInfo(version, MC_PACKAGE_NAME);
+                ApplicationInfo mcInfo = createFakeApplicationInfo(version, MC_PACKAGE_NAME);
+// This forces the launcher to use our "System-flagged" fake info every time.
                 sourceIntent.putExtra("MC_SRC", mcInfo.sourceDir);
                 if (mcInfo.splitSourceDirs != null) {
                     sourceIntent.putExtra("MC_SPLIT_SRC", new ArrayList<>(Arrays.asList(mcInfo.splitSourceDirs)));
@@ -148,6 +150,11 @@ public class MinecraftLauncher {
                     }
                     gameManager.loadLibrary("fmod");
                     gameManager.loadLibrary("MediaDecoders_Android");
+                    try { 
+    Thread.sleep(1000); // Give the system 1 second to stabilize the classloader
+} catch (InterruptedException e) {
+    e.printStackTrace();
+}
                     gameManager.loadLibrary("minecraftpe");
                     gameManager.loadLibrary("gxcore");
                 }
@@ -232,4 +239,4 @@ public class MinecraftLauncher {
                 activity, "Failed to launch Minecraft: " + message, Toast.LENGTH_LONG).show()
         );
     }
-}
+            }
