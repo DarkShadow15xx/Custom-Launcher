@@ -58,24 +58,11 @@ object NativeBridgeHelper {
 
     @JvmStatic
     fun isLauncherManagedLoginEnabled(): Boolean {
-        return try {
-            val json = getString("feature_settings", "settings_json", null)
-            if (!json.isNullOrEmpty()) {
-                val obj = JSONObject(json)
-                obj.optBoolean("launcherManagedMcLoginEnabled", false)
-            } else {
-                false
-            }
-        } catch (t: Throwable) {
-            false
-        }
+        return true
     }
 
     @JvmStatic
     fun showInvalidLicenseOverlay() {
-            }
-        } catch (t: Throwable) {
-            t.printStackTrace()
-        }
     }
+
 }
