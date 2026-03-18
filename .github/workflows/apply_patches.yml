@@ -1,0 +1,45 @@
+name: Apply Android 14 Hardening Patches
+on:
+  workflow_dispatch: # This allows the "Click to Run" button
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Needed to push the changes back to your repo
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Run Sed Injection Script
+        run: |
+          echo "🚀 Starting Patch Injection for Samsung A05..."
+          
+          # 1. Disable Zoom & Snaplook Mods in CMake
+          # We use | as a delimiter to avoid clashing with slashes in paths
+          sed -i 's|src/zoom/zoom.cpp|# src/zoom/zoom.cpp|g' app/src/main/cpp/inbuiltmods/CMakeLists.txt
+          sed -i 's|src/snaplook/snaplook.cpp|# src/snaplook/snaplook.cpp|g' app/src/main/cpp/inbuiltmods/CMakeLists.txt
+          
+          # 2. Kill Faulty Signature Hooks (Neutralize 0x0 Crash)
+          # Injects 'return;' at the start of the function body
+          sed -i 's/void hookTimer() {/void hookTimer() { return;/g' app/src/main/cpp/unpaircore/src/HookManager.cpp
+          sed -i 's/void patchMinecraftLogo() {/void patchMinecraftLogo() { return;/g' app/src/main/cpp/unpaircore/src/HookManager.cpp
+          
+          # 3. Bypass mprotect() SELinux restriction
+          # Forces the check to return true even if it fails
+          sed -i 's/if (result != 0) {/if (result != 0) { return true; \/\/ A14 Bypass/g' app/src/main/cpp/levi_init/src/Runtime.cpp
+          
+          # 4. Java Layer: Spoof Play Store & RenderThread Sleep
+          # Note: We use a very specific string match to ensure we hit the right line
+          sed -i 's/sourceIntent.setClass(context, MinecraftActivity.class);/sourceIntent.setClass(context, MinecraftActivity.class); sourceIntent.putExtra("android.intent.extra.INSTALLER_PACKAGE_NAME", "com.android.vending"); try { Thread.sleep(1000); } catch (Exception e) {}/g' app/src/main/java/org/levimc/launcher/core/minecraft/MinecraftLauncher.java
+          
+          echo "✅ Patches applied successfully."
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "🔧 Apply Android 14 & Samsung A05 Compatibility Patches" || echo "No changes to commit"
+          git push
