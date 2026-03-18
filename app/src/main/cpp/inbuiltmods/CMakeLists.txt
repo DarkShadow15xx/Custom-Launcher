@@ -6,9 +6,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_library(inbuiltmods SHARED
     src/common/transition.cpp
-    src/zoom/zoom.cpp
+    # src/zoom/zoom.cpp
     src/fps/fps.cpp
-    src/snaplook/snaplook.cpp
+    # src/snaplook/snaplook.cpp
 )
 
 target_include_directories(inbuiltmods PRIVATE 

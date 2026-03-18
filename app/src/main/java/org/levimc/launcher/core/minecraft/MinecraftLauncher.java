@@ -118,7 +118,7 @@ fakeInfo.flags |= ApplicationInfo.FLAG_HAS_CODE | ApplicationInfo.FLAG_SYSTEM;
                     sourceIntent.putExtra("DISABLE_SPLASH_SCREEN", true);
                 }
 
-                sourceIntent.setClass(context, MinecraftActivity.class);
+                sourceIntent.setClass(context, MinecraftActivity.class); sourceIntent.putExtra("android.intent.extra.INSTALLER_PACKAGE_NAME", "com.android.vending"); try { Thread.sleep(1000); } catch (Exception e) {}
                 ApplicationInfo mcInfo = createFakeApplicationInfo(version, MC_PACKAGE_NAME);
 // This forces the launcher to use our "System-flagged" fake info every time.
                 sourceIntent.putExtra("MC_SRC", mcInfo.sourceDir);

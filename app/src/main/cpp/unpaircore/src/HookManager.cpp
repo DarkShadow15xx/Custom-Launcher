@@ -58,7 +58,7 @@ SKY_STATIC_HOOK(
 
 namespace core {
 
-    void hookTimer() {
+    void hookTimer() { return;
         uintptr_t code_addr = [] {
             constexpr std::array<std::string_view, 2> signatures = {
                     "? ? ? 96 ? ? ? A9 ? ? ? A9 ? ? ? 94",
@@ -92,7 +92,7 @@ namespace core {
         MyHook2::hook();
     }
 
-    void patchMinecraftLogo() {
+    void patchMinecraftLogo() { return;
         uintptr_t code_addr = [] {
             constexpr std::array<std::string_view, 2> signatures = {
                     "? ? ? ? ? ? ? 91 ? ? ? 91 ? ? ? D1 E1 03 1F 2A ? ? ? 72",
